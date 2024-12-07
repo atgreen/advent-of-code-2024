@@ -1,0 +1,15 @@
+(labels ((dfs (answer value operands part-2?)
+           (if (null operands)
+               (eq answer value)
+               (or (dfs answer (+ value (car operands)) (cdr operands) part-2?)
+                   (dfs answer (* value (car operands)) (cdr operands) part-2?)
+                   (and part-2?
+                        (dfs answer (parse-integer (format nil "~A~A" value (car operands))) (cdr operands) t))))))
+  (loop for part-2 in '(nil t)
+        do (print (loop for line in (uiop:read-file-lines "07.input")
+                        for nums = (uiop:split-string line)
+                        for answer = (parse-integer (car nums) :junk-allowed t)
+                        for operands = (mapcar #'parse-integer (cdr nums))
+                        sum (if (dfs answer (car operands) (cdr operands) part-2)
+                                answer
+                                0)))))
